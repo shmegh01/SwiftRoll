@@ -27,6 +27,105 @@
             margin: 0 auto;
             min-height: 100vh;
             position: relative;
+            padding-bottom: 80px; /* Чтобы контент не перекрывался навигацией */
+        }
+
+        /* Секции контента */
+        .section {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Профиль пользователя */
+        .profile-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(30, 30, 30, 0.5);
+            border-radius: 20px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 107, 53, 0.2);
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ff6b35;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+        }
+
+        .username {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .user-id {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+
+        .telegram-badge {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255, 107, 53, 0.15);
+            padding: 6px 12px;
+            border-radius: 12px;
+            color: #ff6b35;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .telegram-badge i {
+            margin-right: 6px;
+        }
+
+        /* Пустые секции */
+        .empty-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+        }
+
+        .empty-section i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: #444;
+        }
+
+        .empty-section h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        .empty-section p {
+            font-size: 16px;
+            max-width: 300px;
+            line-height: 1.5;
         }
 
         /* Нижняя навигация */
@@ -129,6 +228,23 @@
             .nav-btn i {
                 font-size: 20px;
             }
+            
+            .avatar {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .username {
+                font-size: 20px;
+            }
+            
+            .empty-section i {
+                font-size: 48px;
+            }
+            
+            .empty-section h2 {
+                font-size: 18px;
+            }
         }
 
         /* Предотвращение выделения текста на мобильных */
@@ -157,7 +273,38 @@
 </head>
 <body>
     <div class="container">
-        <!-- Только тёмный фон и кнопки внизу -->
+        <!-- Секция профиля -->
+        <div class="section active" id="profile-section">
+            <div class="profile-container">
+                <img id="user-avatar" class="avatar" src="" alt="Аватар">
+                <h2 id="username" class="username">@username</h2>
+                <p id="user-id" class="user-id">ID: </p>
+                <div class="telegram-badge">
+                    <i class="fab fa-telegram"></i>
+                    <span>Telegram User</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Секция Roll (пустая) -->
+        <div class="section" id="roll-section">
+            <div class="empty-section">
+                <i class="fas fa-dice"></i>
+                <h2>Roll Section</h2>
+                <p>Эта секция находится в разработке</p>
+            </div>
+        </div>
+        
+        <!-- Секция Referral (пустая) -->
+        <div class="section" id="refferal-section">
+            <div class="empty-section">
+                <i class="fas fa-users"></i>
+                <h2>Referral Section</h2>
+                <p>Эта секция находится в разработке</p>
+            </div>
+        </div>
+
+        <!-- Нижняя навигация -->
         <div class="bottom-nav">
             <button class="nav-btn active" onclick="showSection('profile')" id="profile-btn">
                 <i class="fas fa-user"></i>
@@ -189,6 +336,39 @@
             tg.setHeaderColor('#1a1a1a');
             tg.setBackgroundColor('#1a1a1a');
 
+            // Получаем данные пользователя
+            const user = tg.initDataUnsafe.user;
+            
+            // Заполняем профиль данными пользователя
+            if (user) {
+                // Устанавливаем аватар
+                const avatar = document.getElementById('user-avatar');
+                if (user.photo_url) {
+                    avatar.src = user.photo_url;
+                } else {
+                    // Заглушка если аватарки нет
+                    const placeholderText = user.username ? user.username[0].toUpperCase() : 
+                                      user.first_name ? user.first_name[0].toUpperCase() : 'U';
+                    avatar.src = `https://via.placeholder.com/120/1a1a1a/ff6b35?text=${placeholderText}`;
+                }
+                
+                // Устанавливаем username
+                const usernameElement = document.getElementById('username');
+                if (user.username) {
+                    usernameElement.textContent = '@' + user.username;
+                } else if (user.first_name) {
+                    usernameElement.textContent = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+                } else {
+                    usernameElement.textContent = 'Пользователь';
+                }
+                
+                // Устанавливаем ID пользователя
+                const userIdElement = document.getElementById('user-id');
+                if (user.id) {
+                    userIdElement.textContent = 'ID: ' + user.id;
+                }
+            }
+
             // Инициализируем активную кнопку
             setActiveButton('profile');
         }
@@ -214,27 +394,23 @@
             // Если уже на этой секции - ничего не делаем
             if (currentSection === sectionName) return;
             
+            // Скрываем все секции
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Показываем выбранную секцию
+            const activeSection = document.getElementById(sectionName + '-section');
+            if (activeSection) {
+                activeSection.classList.add('active');
+            }
+            
             // Устанавливаем активную кнопку
             setActiveButton(sectionName);
         }
 
         // Инициализируем приложение
         document.addEventListener('DOMContentLoaded', init);
-
-        // Предотвращаем стандартное поведение на мобильных
-        document.addEventListener('touchstart', function() {}, { passive: true });
-        document.addEventListener('touchmove', function() {}, { passive: true });
-        document.addEventListener('touchend', function() {}, { passive: true });
-
-        // Отключаем масштабирование при двойном тапе
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', function(event) {
-            const now = (new Date()).getTime();
-            if (now - lastTouchEnd <= 300) {
-                event.preventDefault();
-            }
-            lastTouchEnd = now;
-        }, { passive: false });
     </script>
 </body>
 </html>
