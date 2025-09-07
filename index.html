@@ -77,13 +77,13 @@
             .bottom-nav {
                 padding: 12px 15px;
             }
-
+            
             .nav-btn {
                 padding: 10px 12px;
                 font-size: 11px;
                 min-width: 50px;
             }
-
+            
             .nav-btn i {
                 font-size: 20px;
             }
@@ -118,43 +118,31 @@
             // Говорим Telegram, что приложение готово
             tg.ready();
             tg.expand();
-
+            
             // Устанавливаем тёмную тему
             tg.setHeaderColor('#1a1a1a');
             tg.setBackgroundColor('#1a1a1a');
         }
 
-        // Показать секцию (простая функция для кнопок)
+        // Показать секцию (теперь без алертов)
         function showSection(sectionName) {
             // Убираем активный класс у всех кнопок
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-
+            
             // Активируем нажатую кнопку
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 if (btn.querySelector('span').textContent.toLowerCase() === sectionName) {
                     btn.classList.add('active');
                 }
             });
-
-            // Можно добавить действия для каждой кнопки
-            switch(sectionName) {
-                case 'profile':
-                    tg.showAlert("Profile section");
-                    break;
-                case 'roll':
-                    tg.showAlert("Roll section");
-                    break;
-                case 'refferal':
-                    tg.showAlert("Refferal section");
-                    break;
-            }
+            
+            // Теперь здесь нет showAlert - кнопки будут просто переключаться
         }
 
         // Инициализируем приложение
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
-
 </html>
